@@ -101,9 +101,26 @@ With this information, we can proceed to setup the `modifyJcmRom` script.
 Let's see an example configuration first:
 ```javascript
 var morphConfig = {
+    // First you assign a bone by name, in this example we want to apply morphs based on the bending of the left thigh
     "Left Thigh Bend": {
+        // Next we choose an axis like "XRotate", "YRotate" or "ZRotate"
         "XRotate": {
+           // Now you can define a list of morphs for positive bending angels that should be applied
         	 "positive": [{
+                "morphName": "Rotation LEG LEFT Walk Backward Fix",
+                "range": {
+                    "angle": {
+                        "start": 0,
+                        // Insert the maximum value you could find in the JCM ROM animation
+                        // for this bone's XRotate positive value (use the analyzeKeyframesOfNode script)
+                        "end": 37.5
+                    },
+                    "value": {
+                        "start": 0,
+                        "end": 0.3 // Choose how strong the morph should be applied, here it will be 30% on a bending angle of 37.5
+                    }
+                }
+            }, {
                 "morphName": "!Hip Bend Controller",
                 "range": {
                     "angle": {
@@ -111,20 +128,20 @@ var morphConfig = {
                         "end": 37.5
                     },
                     "value": {
-                        "start": 1,
+                        "start": 1, // We can also activate morphs the "whole time", the Hip Bend Controller is dynamic on it's own
                         "end": 1
                     }
                 }
             }],
             "negative": [{
-                "morphName": "!Hip Bend Controller",
+                "morphName": "Rotation LEG LEFT Walk Forward Fix",
                 "range": {
                     "angle": {
                         "start": 0,
                         "end": -115
                     },
                     "value": {
-                        "start": 1,
+                        "start": 0,
                         "end": 1
                     }
                 }
@@ -133,6 +150,11 @@ var morphConfig = {
     }
 };
 ```
+
+With the example configuration in place, the script will go trough the existing timeline of your JCM ROM animation and it will:
+* Find the frames that needs to be modified, based on the bone name, rotation axis and value (> 0)
+* Applies all defined morphs of the list of positive or negative morphs, based on the current angle
+* Automatically resets all morphs on the frames "around" to 0 again to fight the default interplotation of daz
 
 ## Use the scripts
 
